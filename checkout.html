@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout | VICIFY</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: #f9f9f9;
+      padding: 2rem;
+      color: #222;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #111;
+      font-size: 2.2rem;
+    }
+
+    .user-info {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: #555;
+    }
+
+    .cart-summary {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 0;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-name {
+      font-weight: 600;
+    }
+
+    .item-price {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: red;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .total-section {
+      text-align: right;
+      margin-top: 2rem;
+    }
+
+    .total-section h2 {
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .total-amount {
+      font-size: 1.8rem;
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .pay-button {
+      display: block;
+      margin: 2rem auto 0;
+      background-color: #28a745;
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .pay-button:hover {
+      background-color: #1e7e34;
+    }
+
+    @media (max-width: 600px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .total-section {
+        text-align: left;
+      }
+
+      .pay-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🛒 Your VICIFY Cart</h1>
+  <div class="user-info" id="user-info"></div>
+  <div class="cart-summary" id="cart-summary"></div>
+  <div class="total-section">
+    <h2>Total:</h2>
+    <p class="total-amount">₦<span id="total">0</span></p>
+  </div>
+  <button class="pay-button" onclick="payWithPaystack()">Pay Securely</button>
+
+  <script>
+    const userInfo = document.getElementById('user-info');
+    const summary = document.getElementById('cart-summary');
+    const totalDisplay = document.getElementById('total');
+    let cart = JSON.parse(localStorage.getItem('vicify-cart')) || [];
+    const userEmail = localStorage.getItem('vicify-user-email');
+    const userName = localStorage.getItem('vicify-user-name');
+
+    if (userEmail) {
+      userInfo.innerHTML = `Signed in as <strong>${userName}</strong> (<em>${userEmail}</em>)`;
+    }
+
+    function updateCartIconCount() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const icon = document.querySelector('.cart-count');
+      if (icon) icon.textContent = count;
+    }
+
+    function renderCart() {
+      summary.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        summary.innerHTML = "<p>Your cart is empty. Redirecting to homepage...</p>";
+        document.querySelector('.pay-button').disabled = true;
+        totalDisplay.textContent = "0";
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 3000);
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+        itemDiv.innerHTML = `
+          <div>
+            <p class="item-name">${item.name} x ${item.quantity}</p>
+            <p style="font-size: 14px; color: #555;">₦${item.price.toLocaleString()} each</p>
+            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+          </div>
+          <div class="item-price">₦${itemTotal.toLocaleString()}</div>
+        `;
+        summary.appendChild(itemDiv);
+      });
+
+      totalDisplay.textContent = total.toLocaleString();
+      updateCartIconCount();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('vicify-cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function payWithPaystack() {
+      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      if (total <= 0) {
+        alert("Your cart is empty or invalid.");
+        return;
+      }
+
+      const handler = PaystackPop.setup({
+        key: 'pk_test_c109ed10c7655fdba8997818a5f40920eee5b8ae',
+        email: userEmail || 'customer@vicify.ng',
+        amount: total * 100,
+        currency: 'NGN',
+        channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money'],
+        ref: 'VICIFY_' + Math.floor(Math.random() * 1000000000),
+        label: 'VICIFY Checkout',
+        callback: function(response) {
+          alert('✅ Payment complete! Ref: ' + response.reference);
+          localStorage.removeItem('vicify-cart');
+          window.location.href = 'thankyou.html';
+        },
+        onClose: function() {
+          alert('❌ Payment cancelled.');
+        }
+      });
+
+      handler.openIframe();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>

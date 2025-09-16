@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>VICIFY | Shop Your Style</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div id="loader" class="loader-wrapper">
+    <div class="loader"></div>
+  </div>
+
+  <header>
+    <div class="logo">🛒 VICIFY</div>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#products-container">Products</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li>
+          <div id="g_id_onload"
+            data-client_id="YOUR_GOOGLE_CLIENT_ID"
+            data-callback="handleGoogleSignIn"
+            data-auto_prompt="false"></div>
+
+          <div class="g_id_signin"
+            data-type="standard"
+            data-shape="rectangular"
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="medium"
+            data-logo_alignment="left">
+          </div>
+        </li>
+      </ul>
+      <div class="cart">
+        🛒 Cart (<span id="cart-count">0</span>)
+      </div>
+      <div class="dark-toggle">
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </nav>
+  </header>
+
+  <div class="search-filter">
+    <input type="text" id="searchInput" placeholder="Search products...">
+    <select id="categoryFilter">
+      <option value="all">All Categories</option>
+      <option value="fashion">Fashion</option>
+      <option value="electronics">Electronics</option>
+      <option value="home">Home</option>
+    </select>
+  </div>
+
+  <div class="image-slider">
+    <img src="Image.png" class="slide active">
+    <img src="Item.png" class="slide">
+    <img src="Vicify.png" class="slide">
+    <img src="file_00000000172c620a9deffab1055c2d38.png" class="slide">
+    <button class="prev">&#10094;</button>
+    <button class="next">&#10095;</button>
+  </div>
+
+  <section class="banner">
+    <h1>Welcome to VICIFY</h1>
+    <p>Your one-stop shop for gadgets, fashion, and accessories</p>
+  </section>
+
+  <section id="products-container" class="product-grid"></section>
+
+  <section class="features">
+    <div class="feature">🚚 Free Shipping on orders over ₦50,000</div>
+    <div class="feature">💳 Secure Payment via Paystack</div>
+    <div class="feature">🔁 7-Day Return Policy</div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <p>Email: support@vicify.ng</p>
+    <p>Phone: +234 800 123 4567</p>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 VICIFY. Built for vibes & value. Lagos 💚</p>
+  </footer>
+</body>
+</html>
+<style>
+/* --- style.css --- */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+.loader-wrapper {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loader {
+  border: 5px solid #ccc;
+  border-top: 5px solid #333;
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.cart {
+  font-weight: bold;
+}
+
+.dark-toggle {
+  margin-left: 15px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+.image-slider {
+  position: relative;
+  overflow: hidden;
+  height: 300px;
+  background: #eee;
+}
+
+.slide {
+  display: none;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  position: absolute;
+  top: 0; left: 0;
+}
+
+.slide.active {
+  display: block;
+}
+
+.banner {
+  text-align: center;
+  padding: 20px;
+  background-color: #ddd;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  background: #fafafa;
+  padding: 20px;
+  text-align: center;
+}
+
+.search-filter {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  background-color: #f0f0f0;
+}
+</style>
+<script>
+/* --- script.js --- */
+document.addEventListener('DOMContentLoaded', () => {
+  const loader = document.getElementById('loader');
+  const darkToggle = document.getElementById('darkModeToggle');
+  const searchInput = document.getElementById('searchInput');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const cartCount = document.getElementById('cart-count');
+  const productGrid = document.getElementById('products-container');
+
+  // Remove loader
+  window.onload = () => loader.style.display = 'none';
+
+  // Toggle dark mode
+  darkToggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode', darkToggle.checked);
+    localStorage.setItem('darkMode', darkToggle.checked);
+  });
+
+  // Init dark mode state
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    darkToggle.checked = true;
+  }
+
+  // Products
+  const products = [
+    { id: 1, name: 'Wireless Earbuds', category: 'electronics' },
+    { id: 2, name: 'Sleek T-Shirt', category: 'fashion' },
+    { id: 3, name: 'Smartphone Holder', category: 'electronics' },
+    { id: 4, name: 'Kitchen Towel Set', category: 'home' },
+  ];
+
+  function renderProducts(list) {
+    productGrid.innerHTML = '';
+    list.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <h3>${p.name}</h3>
+        <p>Category: ${p.category}</p>
+        <button onclick="addToCart(${p.id})">Add to Cart</button>
+        <button onclick="toggleWishlist(${p.id})">❤ Wishlist</button>
+      `;
+      productGrid.appendChild(card);
+    });
+  }
+
+  renderProducts(products);
+
+  // Search + filter
+  function filterProducts() {
+    const term = searchInput.value.toLowerCase();
+    const category = categoryFilter.value;
+    const filtered = products.filter(p => {
+      const matchesSearch = p.name.toLowerCase().includes(term);
+      const matchesCategory = category === 'all' || p.category === category;
+      return matchesSearch && matchesCategory;
+    });
+    renderProducts(filtered);
+  }
+
+  searchInput.addEventListener('input', filterProducts);
+  categoryFilter.addEventListener('change', filterProducts);
+
+  // Cart logic
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  function addToCart(id) {
+    cart.push(id);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+  }
+  function updateCartCount() {
+    cartCount.textContent = cart.length;
+  }
+  updateCartCount();
+
+  // Wishlist
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  function toggleWishlist(id) {
+    const index = wishlist.indexOf(id);
+    if (index > -1) wishlist.splice(index, 1);
+    else wishlist.push(id);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    alert(wishlist.includes(id) ? 'Added to wishlist!' : 'Removed from wishlist.');
+  }
+});
+</script>

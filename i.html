@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VICIFY | Shop Your Style</title>
+  <meta name="description" content="Shop gadgets, fashion and accessories at VICIFY — free shipping over ₦50,000.">
+  <!-- Open Graph (basic) -->
+  <meta property="og:title" content="VICIFY | Shop Your Style">
+  <meta property="og:description" content="Shop gadgets, fashion and accessories at VICIFY — free shipping over ₦50,000.">
+  <meta property="og:type" content="website">
+
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <script defer src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+  <!-- Google Sign-In -->
+  <script defer src="https://accounts.google.com/gsi/client"></script>
+
+  <style>
+    /* --- BASIC RESET & LAYOUT --- */
+    :root{
+      --bg:#f6f6f8; --dark:#111; --accent:#ff9900; --muted:#666;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:var(--dark);-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    header{background:#111;color:#fff;padding:12px 18px;position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;justify-content:space-between}
+    .logo{font-weight:800;display:flex;align-items:center;gap:8px}
+    nav ul{display:flex;gap:14px;list-style:none;align-items:center}
+    nav a{color:#fff;text-decoration:none;padding:6px 10px;border-radius:6px;font-weight:600}
+    nav a:hover{background:rgba(255,255,255,0.06)}
+    .cart-btn{background:#fff;color:#000;padding:6px 10px;border-radius:6px;border:none;cursor:pointer;font-weight:700}
+    .cart-bubble{background:var(--accent);color:#000;padding:4px 8px;border-radius:20px;margin-left:8px;font-weight:700}
+
+    /* HERO VIDEO */
+    .video-hero{position:relative;height:60vh;max-height:820px;overflow:hidden}
+    .video-hero video{width:100%;height:100%;object-fit:cover;display:block}
+    .hero-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.45);padding:28px;border-radius:10px;color:#fff;text-align:center}
+    .hero-overlay h1{font-size:clamp(1.6rem,3vw,2.4rem);margin-bottom:6px}
+    .pip-btn{position:absolute;right:16px;top:16px;z-index:40;padding:8px 12px;border-radius:8px;border:none;background:#000;color:#fff;cursor:pointer}
+
+    /* PRODUCTS + CONTROLS */
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+    .controls input[type="search"], .controls select{padding:8px 10px;border-radius:8px;border:1px solid #ddd;min-width:180px}
+    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+
+    .product{background:#fff;border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:10px;transition:transform .18s ease,box-shadow .18s ease}
+    .product:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.08)}
+    .product img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+    .product h3{font-size:1rem}
+    .price{font-weight:800;color:#057a55}
+    .actions{display:flex;gap:8px;margin-top:auto}
+    .btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    .btn-cta{background:var(--dark);color:#fff}
+    .btn-outline{background:#fff;border:1px solid #ddd}
+
+    /* QUICK VIEW MODAL */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:120}
+    .quick-modal{background:#fff;width:min(680px,95%);border-radius:10px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+    .quick-modal img{width:100%;height:260px;object-fit:cover;border-radius:8px}
+    .quick-close{position:absolute;right:18px;top:18px;background:#111;color:#fff;border-radius:8px;padding:6px 10px;border:none;cursor:pointer}
+
+    /* CART DRAWER (sticky) */
+    .cart-drawer{position:fixed;right:18px;bottom:18px;background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 50px rgba(0,0,0,0.12);z-index:80;width:340px;max-height:70vh;overflow:auto}
+    .cart-drawer .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .cart-item{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0}
+    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px}
+    .qty-controls{display:flex;gap:6px;align-items:center}
+    .cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+
+    /* FOOTER */
+    footer{background:#111;color:#fff;padding:28px;margin-top:28px}
+    footer a{color:#fff;text-decoration:none}
+    .footer-grid{display:flex;gap:24px;flex-wrap:wrap;justify-content:space-between}
+
+    /* RESPONSIVE */
+    @media (max-width:900px){
+      .quick-modal{grid-template-columns:1fr}
+      .video-hero{height:50vh}
+      .cart-drawer{width:92%;right:4%;left:4%}
+    }
+    /* small helper */
+    .muted{color:var(--muted);font-size:.95rem}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo" aria-label="VICIFY logo">🛍️ <span>VICIFY</span></div>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li>
+          <!-- Google sign-in onload -->
+          <div id="g_id_onload"
+               data-client_id="243277835559-53f8bc5sk0ka9k7v9stscifolsuv2icd.apps.googleusercontent.com"
+               data-callback="handleCredentialResponse"
+               data-auto_prompt="false"></div>
+          <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="medium"></div>
+        </li>
+      </ul>
+    </nav>
+
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="cart-btn" id="open-cart" aria-label="Open cart">
+        🛒 Cart <span id="cart-num" class="cart-bubble">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="video-hero" aria-hidden="false">
+    <video id="hero-video" autoplay muted loop playsinline>
+      <source src="Hailuo_Video_Create a high-quality promo vi_408003096175505417 (1).mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="hero-overlay" data-aos="fade-up">
+      <h1>Welcome to VICIFY</h1>
+      <p class="muted">Gadgets, fashion & accessories — vibes & value.</p>
+    </div>
+    <button id="pip-btn" class="pip-btn" aria-label="Toggle picture in picture">📺 PiP Mode</button>
+  </section>
+
+  <main class="container">
+    <!-- CONTROLS -->
+    <div class="controls" id="controls" data-aos="fade-right">
+      <input type="search" id="search" placeholder="Search products..." aria-label="Search products">
+      <select id="sort">
+        <option value="featured">Sort: Featured</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="name-asc">Name: A → Z</option>
+      </select>
+
+      <select id="filter-price">
+        <option value="all">All prices</option>
+        <option value="under-10000">Under ₦10,000</option>
+        <option value="10000-50000">₦10,000 - ₦50,000</option>
+        <option value="over-50000">Over ₦50,000</option>
+      </select>
+
+      <button id="clear-filters" class="btn btn-outline">Clear</button>
+    </div>
+
+    <!-- PRODUCTS -->
+    <section id="products" class="products" aria-live="polite"></section>
+
+    <!-- QUICK VIEW MODAL -->
+    <div class="overlay" id="overlay" aria-hidden="true">
+      <div class="quick-modal" role="dialog" aria-modal="true" aria-labelledby="quick-title">
+        <img id="quick-img" src="" alt="">
+        <div>
+          <h2 id="quick-title"></h2>
+          <p id="quick-desc" class="muted"></p>
+          <p id="quick-price" style="font-weight:800;margin-top:10px"></p>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="quick-add" class="btn btn-cta">Add to cart</button>
+            <button id="quick-close" class="btn btn-outline">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <section id="contact" style="margin-top:28px;padding:18px;background:#fff;border-radius:12px" data-aos="fade-up">
+      <h3>Contact Us</h3>
+      <p class="muted">Email: <a href="mailto:support@vicify.ng">support@vicify.ng</a> | Phone: +234 800 123 4567</p>
+      <form id="contact-form" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" id="contact-name" placeholder="Your name" style="padding:8px;border-radius:8px;border:1px solid #eee;flex:1;min-width:180px">
+        <input type="email" id="contact-email" placeholder="Email" style="padding:8px;border-radius:8px;border:1px solid #eee;min-width:220px">
+        <input type="text" id="contact-msg" placeholder="Message" style="padding:8px;border-radius:8px;border:1px solid #eee;flex-basis:100%">
+        <button type="submit" class="btn btn-cta">Send</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- CART DRAWER -->
+  <aside class="cart-drawer" id="cart-drawer" aria-hidden="true" style="display:none">
+    <div class="header">
+      <strong>Your cart</strong>
+      <button id="close-cart" class="btn btn-outline">Close</button>
+    </div>
+    <div id="cart-items" aria-live="polite"></div>
+    <div class="cart-footer">
+      <div><strong>Total:</strong> <span id="cart-total">₦0</span></div>
+      <div style="display:flex;gap:8px">
+        <button id="clear-cart" class="btn btn-outline">Clear</button>
+        <button id="checkout-btn" class="btn btn-cta">Checkout</button>
+      </div>
+    </div>
+  </aside>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <h4>NEW TO VICIFY?</h4>
+        <p class="muted">Subscribe for newest drops & offers</p>
+        <form id="newsletter" style="display:flex;gap:8px;margin-top:8px">
+          <input type="email" id="news-email" placeholder="Email address" required style="padding:8px;border-radius:8px;border:none;min-width:180px">
+          <button type="submit" class="btn btn-cta">Subscribe</button>
+        </form>
+      </div>
+
+      <div>
+        <h4>NEED HELP?</h4>
+        <ul style="list-style:none;margin-top:8px">
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="FAQ.html#faq">FAQs</a></li>
+         <li><a href="FAQ.html#faq">FAQs</a></li>
+         <script>
+             const products = [
+  { name: 'Laptop (HP)', price: 450000, desc: 'High-performance laptop for work and gaming.', image: 'img/laptop.jpg' },
+  { name: 'Football', price: 12000, desc: 'Official match-size football.', image: 'img/football.jpg' },
+  { name: 'Cooking Pot', price: 7500, desc: 'Durable stainless steel pot.', image: 'img/pot.jpg' },
+  { name: 'Bluetooth Headset', price: 18000, desc: 'Wireless over-ear headset.', image: 'img/headset.jpg' },
+  { name: 'Smartphone (Infinix)', price: 105000, desc: 'Latest Android device with great battery.', image: 'img/phone.png' },
+  { name: 'Spoons (Set of 6)', price: 2500, desc: 'Premium stainless steel spoons.', image: 'img/spoons.jpg' },
+  { name: 'Acoustic Guitar', price: 50000, desc: 'Classic 6-string acoustic.', image: 'img/guitar.webp' },
+  { name: 'Drum Set', price: 175000, desc: 'Full drum kit for pros.', image: 'img/drums.jpg' },
+  { name: 'Smartwatch', price: 29000, desc: 'Tracks fitness and notifications.', image: 'img/watch.png' },
+  { name: 'Sneakers', price: 35000, desc: 'Comfortable running shoes.', image: 'img/sneakers.png' },
+  { name: 'Microwave', price: 42000, desc: '800W Microwave oven.', image: 'img/microwave.jpg' },
+  { name: 'Blender', price: 15000, desc: 'Blend anything, smooth & easy.', image: 'img/blender.jpg' },
+  { name: 'Refrigerator', price: 210000, desc: 'Energy-saving double door fridge.', image: 'img/fridge.png' },
+  { name: 'Basketball', price: 9500, desc: 'Outdoor/indoor use.', image: 'img/basketball.png' },
+  { name: 'Sewing Machine', price: 68000, desc: 'Perfect for tailors.', image: 'img/sewing.jpg' },
+  { name: 'Tripod Stand', price: 6000, desc: 'Great for phones/cameras.', image: 'img/tripod.jpg' },
+  { name: 'Camera (DSLR)', price: 320000, desc: 'Canon EOS series.', image: 'img/camera.jpg' },
+  { name: 'Toaster', price: 7000, desc: '2-slice toaster.', image: 'img/toaster.jpg' },
+  { name: 'LED Ring Light', price: 8500, desc: 'Perfect for content creators.', image: 'img/ringlight.jpg' },
+  { name: 'Tablet', price: 80000, desc: '10-inch Android tablet.', image: 'img/tablet.png' }
+];
+         </script>
